@@ -48,19 +48,19 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 5),
                     const Text(
                       "Login to start messaging >.<",
                       style:
                           TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(
-                      height: 80,
+                      height: 50,
                       width: 20,
                     ),
                     TextFormField(
                       decoration: textInputDecoration.copyWith(
-                          labelText: "Eamil",
+                          labelText: "Email",
                           prefixIcon: const Icon(
                             Icons.email,
                             color: Colors.black,
@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                             : "Please enter a valid email";
                       },
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 15),
                     TextFormField(
                       obscureText: true,
                       decoration: textInputDecoration.copyWith(
@@ -106,9 +106,11 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 15,
                     ),
                     SizedBox(
+                      height: 50,
+                      width: 120,
                       child: ElevatedButton(
                           onPressed: () {
                             login();
@@ -119,11 +121,11 @@ class _LoginPageState extends State<LoginPage> {
                                   borderRadius: BorderRadius.circular(30))),
                           child: const Text(
                             "Login",
-                            //style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 17),
                           )),
                     ),
                     const SizedBox(
-                      height: 35,
+                      height: 20,
                     ),
                     Text.rich(TextSpan(
                         text: "Don't have an account? ",

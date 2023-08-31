@@ -1,113 +1,103 @@
 import 'package:chatapp/helper/helper_function.dart';
-import 'package:chatapp/pages/auth/friend_list.dart';
 import 'package:chatapp/pages/auth/search_page.dart';
+import 'package:chatapp/pages/home_page.dart';
 import 'package:chatapp/pages/profile_page.dart';
 import 'package:chatapp/service/auth_service.dart';
-import 'package:chatapp/service/database_service.dart';
 import 'package:chatapp/widgets/widgets.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'auth/Login_Page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class ProfilePage extends StatefulWidget {
+  String userName;
+  String email;
+  ProfilePage({super.key, required this.email, required this.userName});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  String userName = "";
-  String email = "";
-  Stream? chats;
+class _ProfilePageState extends State<ProfilePage> {
   AuthService authService = AuthService();
-
   @override
-  void initState() {
-    super.initState();
-    gettingUserData();
-  }
-
-  gettingUserData() async {
-    await HelperFunctions.getUserEmailFromSf().then((value) {
-      setState(() {
-        email = value!;
-      });
-    });
-    await HelperFunctions.getUserNameFromSF().then((val) {
-      setState(() {
-        userName = val!;
-      });
-    });
-    //getting teh list of snapshots in our streams
-    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getUserChats()
-        .then((snapshot) {
-      setState(() {
-        chats = snapshot;
-      });
-    });
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(69),
         child: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.black,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  nextScreen(context, const SearchPage());
-                },
-                icon: const Icon(
-                  Icons.search,
-                ))
-          ],
-          centerTitle: true,
-          title: const Text(
-            "Chat@",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Borel',
-              fontSize: 22,
-              fontWeight: FontWeight.w200,
+            elevation: 0,
+            backgroundColor: Colors.black,
+            centerTitle: true,
+            title: const Text(
+              "Profile",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Borel',
+                fontSize: 22,
+                fontWeight: FontWeight.w200,
+              ),
+            )),
+      ),
+      body: Container(
+        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 55),
+        child: Column(
+          //mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            const Icon(
+              Icons.account_circle,
+              size: 300,
+              color: Colors.black,
             ),
-          ),
+            const SizedBox(
+              height: 40,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Name",
+                  style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Borel"),
+                ),
+                Text(
+                  widget.userName,
+                  style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Borel",
+                      fontStyle: FontStyle.italic),
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Email",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Borel",
+                  ),
+                ),
+                Text(
+                  widget.email,
+                  style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Borel",
+                      fontStyle: FontStyle.italic),
+                ),
+              ],
+            ),
+            //putting bio option here
+           // TextFormField()
+          ],
         ),
       ),
-      body: Stack(
-        children: <Widget>[
-          const Center(
-              child: Text(
-            "No Chats so far O.O",
-            style: TextStyle(
-              fontFamily: 'Borel',
-              fontSize: 25,
-              fontWeight: FontWeight.w900,
-            ),
-          )),
-          Positioned(
-            bottom: 25,
-            right: 10,
-            child: RawMaterialButton(
-              onPressed: () {
-                nextScreen(context, const FriendList());
-              },
-              shape: const CircleBorder(),
-              fillColor: Colors.black,
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 55,
-              ),
-            ),
-          ),
-        ],
-      ),
-      // Drawer for side menu
       drawer: Drawer(
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 50),
@@ -122,7 +112,7 @@ class _HomePageState extends State<HomePage> {
               height: 30,
             ),
             //username
-            Text(userName,
+            Text(widget.userName,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -130,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                     fontSize: 25,
                     fontStyle: FontStyle.italic)),
             //email
-            Text(email,
+            Text(widget.email,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -156,19 +146,14 @@ class _HomePageState extends State<HomePage> {
                   Text.rich(
                       textAlign: TextAlign.start,
                       TextSpan(
-                          text: "Profile",
+                          text: "Chats",
                           style: const TextStyle(
                               fontFamily: 'Borel',
                               fontSize: 25,
                               fontWeight: FontWeight.w700),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              nextScreenReplace(
-                                  context,
-                                  ProfilePage(
-                                    userName: userName,
-                                    email: email,
-                                  ));
+                              nextScreen(context, const HomePage());
                             }))
                 ]),
             //Account
@@ -225,7 +210,7 @@ class _HomePageState extends State<HomePage> {
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
-                                      title: Text("Log Out"),
+                                      title: const Text("Log Out"),
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -279,23 +264,5 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
-
-  chatList() {
-    return StreamBuilder(
-        stream: chats,
-        builder: (context, AsyncSnapshot snapshot) {
-          //make some checks
-          if (snapshot.hasData) {
-            if (snapshot.data['chats'] != null) {
-            } else {
-              return noChatWidgets();
-            }
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.black),
-            );
-          }
-        });
   }
 }

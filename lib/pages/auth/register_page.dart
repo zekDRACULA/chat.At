@@ -24,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.black),
+      // appBar: AppBar(backgroundColor: Colors.black),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: Colors.black),
@@ -37,7 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    const SizedBox(height: 60, width: 265),
+                    const SizedBox(height: 120, width: 265),
                     const Text(
                       "Chat@",
                       style: TextStyle(
@@ -46,14 +46,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 0),
                     const Text(
                       "Register Now >.<",
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(
-                      height: 80,
+                      height: 50,
                       width: 20,
                     ),
                     TextFormField(
@@ -79,7 +79,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 15,
                     ),
                     TextFormField(
                       decoration: textInputDecoration.copyWith(
@@ -104,7 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             : "Please enter a valid email";
                       },
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 15),
                     TextFormField(
                       obscureText: true,
                       decoration: textInputDecoration.copyWith(
@@ -129,9 +129,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 22,
                     ),
                     SizedBox(
+                      height: 50,
+                      width: 120,
                       child: ElevatedButton(
                           onPressed: () {
                             register();
@@ -140,12 +142,11 @@ class _RegisterPageState extends State<RegisterPage> {
                               backgroundColor: Colors.black,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30))),
-                          child: const Text(
-                            "Register",
-                          )),
+                          child: const Text("Register",
+                              style: TextStyle(fontSize: 17))),
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 15,
                     ),
                     Text.rich(TextSpan(
                         text: "Already have an account? ",
