@@ -1,4 +1,5 @@
 import 'package:chatapp/helper/helper_function.dart';
+import 'package:chatapp/pages/auth/friend_list.dart';
 import 'package:chatapp/pages/auth/search_page.dart';
 import 'package:chatapp/pages/home_page.dart';
 import 'package:chatapp/pages/profile_page.dart';
@@ -94,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
             //putting bio option here
-           // TextFormField()
+            // TextFormField()
           ],
         ),
       ),
@@ -127,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     fontFamily: "Borel",
                     fontSize: 20,
                     fontStyle: FontStyle.italic)),
-            //profile
+            //chats
             const SizedBox(
               height: 50,
             ),
@@ -139,7 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: 10,
                     height: 15,
                   ),
-                  const Icon(Icons.account_circle_sharp, size: 35),
+                  const Icon(Icons.chat, size: 35),
                   const SizedBox(
                     width: 10,
                   ),
@@ -180,6 +181,32 @@ class _ProfilePageState extends State<ProfilePage> {
                               fontSize: 25,
                               fontWeight: FontWeight.w700),
                           recognizer: TapGestureRecognizer()..onTap = () {}))
+                ]),
+            Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  const SizedBox(
+                    width: 10,
+                    height: 15,
+                  ),
+                  const Icon(Icons.group, size: 35),
+                  const SizedBox(
+                    height: 5,
+                    width: 10,
+                  ),
+                  Text.rich(
+                      textAlign: TextAlign.start,
+                      TextSpan(
+                          text: "Friends",
+                          style: const TextStyle(
+                              fontFamily: 'Borel',
+                              fontSize: 25,
+                              fontWeight: FontWeight.w700),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              nextScreen(context, FriendList());
+                            }))
                 ]),
             //LogOut
             Row(

@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
         userName = val!;
       });
     });
-    //getting teh list of snapshots in our streams
+    //getting the list of snapshots in chat stream
     await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getUserChats()
         .then((snapshot) {
@@ -80,21 +80,13 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Stack(
         children: <Widget>[
-          const Center(
-              child: Text(
-            "No Chats so far O.O",
-            style: TextStyle(
-              fontFamily: 'Borel',
-              fontSize: 25,
-              fontWeight: FontWeight.w900,
-            ),
-          )),
+          chatList(),
           Positioned(
             bottom: 25,
             right: 10,
             child: RawMaterialButton(
               onPressed: () {
-                nextScreen(context, const FriendList());
+                nextScreen(context, FriendList());
               },
               shape: const CircleBorder(),
               fillColor: Colors.black,
@@ -196,6 +188,33 @@ class _HomePageState extends State<HomePage> {
                               fontWeight: FontWeight.w700),
                           recognizer: TapGestureRecognizer()..onTap = () {}))
                 ]),
+            //Friends
+            Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  const SizedBox(
+                    width: 10,
+                    height: 15,
+                  ),
+                  const Icon(Icons.group, size: 35),
+                  const SizedBox(
+                    height: 5,
+                    width: 10,
+                  ),
+                  Text.rich(
+                      textAlign: TextAlign.start,
+                      TextSpan(
+                          text: "Friends",
+                          style: const TextStyle(
+                              fontFamily: 'Borel',
+                              fontSize: 25,
+                              fontWeight: FontWeight.w700),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              nextScreen(context, FriendList());
+                            }))
+                ]),
             //LogOut
             Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,8 +307,13 @@ class _HomePageState extends State<HomePage> {
           //make some checks
           if (snapshot.hasData) {
             if (snapshot.data['chats'] != null) {
+              if (snapshot.data['chats'].length != 0) {
+                return const Text("Hello");
+              } else {
+                return noChatWidget();
+              }
             } else {
-              return noChatWidgets();
+              return noChatWidget();
             }
           } else {
             return const Center(
@@ -297,5 +321,26 @@ class _HomePageState extends State<HomePage> {
             );
           }
         });
+  }
+
+  noChatWidget() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(
+              child: Text(
+            "No Chats so far O.O",
+            style: TextStyle(
+              fontFamily: 'Borel',
+              fontSize: 25,
+              fontWeight: FontWeight.w900,
+            ),
+          ))
+        ],
+      ),
+    );
   }
 }

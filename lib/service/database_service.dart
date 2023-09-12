@@ -9,13 +9,15 @@ class DatabaseService {
       FirebaseFirestore.instance.collection("users");
   final CollectionReference chatCollection =
       FirebaseFirestore.instance.collection("chats");
-
+  final CollectionReference friendsCollection =
+      FirebaseFirestore.instance.collection("friends");
   //updating the userdata
   Future savingUserData(String username, String email) async {
     return await userCollection.doc(uid).set({
       "username": username,
       "email": email,
       "chats": [],
+      "friends": [],
       "profilePic": "",
       "uid": uid,
     });
@@ -29,6 +31,10 @@ class DatabaseService {
 
   // get user chats
   getUserChats() async {
+    return userCollection.doc(uid).snapshots();
+  }
+
+  getUserFriends() async {
     return userCollection.doc(uid).snapshots();
   }
 }
