@@ -83,10 +83,82 @@ class _UserSearchState extends State<UserSearch> {
                   itemBuilder: (context, index) {
                     var data =
                         filteredData[index].data() as Map<String, dynamic>;
-                    return ListTile(
-                      title: Text(data['username']),
-                      subtitle: Text(data['email']),
-                    );
+                    return Card(
+                        elevation: 5,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 10),
+                        child: ListTile(
+                            leading: const Icon(
+                              Icons.account_circle_sharp,
+                              color: Colors.black,
+                              size: 60,
+                            ),
+                            title: Text(
+                              data["username"],
+                              style: const TextStyle(
+                                  fontFamily: "Borel",
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                            subtitle: Text(
+                              data["email"],
+                              style: const TextStyle(
+                                  fontFamily: "Borel",
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      elevation: 25,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.account_circle_sharp,
+                                            size: 150,
+                                            color: Colors.black,
+                                          ),
+                                          Text(
+                                            data["username"],
+                                            style: const TextStyle(
+                                                fontFamily: "Borel",
+                                                fontStyle: FontStyle.italic,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 30),
+                                          ),
+                                          Text(
+                                            data["email"],
+                                            style: const TextStyle(
+                                                fontFamily: "Borel",
+                                                fontStyle: FontStyle.italic,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {},
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.black,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              "Request",
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  });
+                            }));
                   },
                 ),
               );

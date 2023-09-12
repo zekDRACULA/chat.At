@@ -244,7 +244,7 @@ class _HomePageState extends State<HomePage> {
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
-                                      title: Text("Log Out"),
+                                      title: const Text("Log Out"),
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
