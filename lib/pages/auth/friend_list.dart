@@ -4,6 +4,7 @@ import 'package:chatapp/pages/auth/friend_list.dart';
 import 'package:chatapp/pages/auth/search_page.dart';
 import 'package:chatapp/pages/home_page.dart';
 import 'package:chatapp/pages/profile_page.dart';
+import 'package:chatapp/pages/requests.dart';
 import 'package:chatapp/pages/user_search.dart';
 import 'package:chatapp/service/auth_service.dart';
 import 'package:chatapp/service/database_service.dart';
@@ -20,7 +21,7 @@ class FriendList extends StatefulWidget {
 }
 
 class _FriendListState extends State<FriendList> {
-  String key = "";
+  //String key = "";
   String userName = "";
   String email = "";
   Stream? friends;
@@ -213,7 +214,34 @@ class _FriendListState extends State<FriendList> {
                               fontWeight: FontWeight.w700),
                           recognizer: TapGestureRecognizer()..onTap = () {}))
                 ]),
-            //Friends
+            //Requests
+
+            Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  const SizedBox(
+                    width: 10,
+                    height: 15,
+                  ),
+                  const Icon(Icons.notifications_on_rounded, size: 35),
+                  const SizedBox(
+                    height: 5,
+                    width: 10,
+                  ),
+                  Text.rich(
+                      textAlign: TextAlign.start,
+                      TextSpan(
+                          text: "Requests",
+                          style: const TextStyle(
+                              fontFamily: 'Borel',
+                              fontSize: 25,
+                              fontWeight: FontWeight.w700),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              nextScreen(context, Requests());
+                            }))
+                ]),
             //LogOut
             Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,8 +252,6 @@ class _FriendListState extends State<FriendList> {
                     height: 15,
                   ),
                   const Icon(Icons.logout_sharp, size: 35),
-
-                  // Log Out
                   const SizedBox(
                     width: 10,
                   ),

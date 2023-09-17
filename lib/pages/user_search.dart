@@ -1,5 +1,11 @@
+import 'dart:core';
+
+import 'package:chatapp/service/auth_service.dart';
 import 'package:chatapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chatapp/service/database_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class UserSearch extends StatefulWidget {
@@ -11,8 +17,18 @@ class UserSearch extends StatefulWidget {
 
 class _UserSearchState extends State<UserSearch> {
   String? _searchQuery = "";
+  User? currentUser = FirebaseAuth.instance.currentUser;
+
   final TextEditingController _searchController = TextEditingController();
+  AuthService authService = AuthService();
   @override
+  void initState() {
+    super.initState();
+    gettingUserData();
+  }
+
+  gettingUserData() async {}
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -150,7 +166,7 @@ class _UserSearchState extends State<UserSearch> {
                                               ),
                                             ),
                                             child: const Text(
-                                              "Request",
+                                              "Send Request",
                                               style: TextStyle(fontSize: 20),
                                             ),
                                           )
@@ -167,6 +183,18 @@ class _UserSearchState extends State<UserSearch> {
         ],
       ),
     );
+  }
+
+  request() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Column(
+              children: [],
+            ),
+          );
+        });
   }
 
   Stream<QuerySnapshot> getDataRealTime() {

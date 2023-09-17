@@ -37,4 +37,8 @@ class DatabaseService {
   getUserFriends() async {
     return userCollection.doc(uid).snapshots();
   }
+
+  getUserRequests() async {
+    return userCollection.doc(uid).snapshots();
+  }
 }
