@@ -29,6 +29,10 @@ class DatabaseService {
     return snapshot;
   }
 
+  getUserData() async {
+    return userCollection.doc(uid).snapshots();
+  }
+
   // get user chats
   getUserChats() async {
     return userCollection.doc(uid).snapshots();

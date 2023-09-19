@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:chatapp/helper/helper_function.dart';
 import 'package:chatapp/service/auth_service.dart';
 import 'package:chatapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,17 +18,38 @@ class UserSearch extends StatefulWidget {
 
 class _UserSearchState extends State<UserSearch> {
   String? _searchQuery = "";
-  User? currentUser = FirebaseAuth.instance.currentUser;
+  String SenderUserName = "";
+  String SenderUserEmail = "";
+
+  User CurrentUser = FirebaseAuth.instance.currentUser!;
 
   final TextEditingController _searchController = TextEditingController();
+
   AuthService authService = AuthService();
+
   @override
   void initState() {
     super.initState();
     gettingUserData();
   }
 
-  gettingUserData() async {}
+  gettingUserData() async {
+    await HelperFunctions.getUserEmailFromSf().then((value) {
+      setState(() {
+        SenderUserEmail = value!;
+      });
+    });
+    await HelperFunctions.getUserNameFromSF().then((val) {
+      setState(() {
+        SenderUserName = val!;
+      });
+    });
+    /* await HelperFunctions.getUserUidFromSf().then((va) {
+      setState(() {
+        CurrentUserUid = va!;
+      });
+    });*/
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,7 +179,11 @@ class _UserSearchState extends State<UserSearch> {
                                                 fontSize: 20),
                                           ),
                                           ElevatedButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              //sendRequest();
+
+                                              return sendFriendRequest();
+                                            },
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.black,
                                               shape: RoundedRectangleBorder(
@@ -185,16 +211,18 @@ class _UserSearchState extends State<UserSearch> {
     );
   }
 
-  request() {
+  sendFriendRequest() async {
     return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            content: Column(
-              children: [],
-            ),
-          );
-        });
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          elevation: 50,
+          content: Column(
+            children: [Text(CurrentUser.uid)],
+          ),
+        );
+      },
+    );
   }
 
   Stream<QuerySnapshot> getDataRealTime() {
