@@ -224,7 +224,7 @@ class _UserSearchState extends State<UserSearch> {
 
   void sendFriendRequest(String CurrentUserUid, String recievers_uid) async {
     try {
-      // Update user B's receivedRequests field to include user A's UID
+      // Update recievers receivedRequests field to include senders UID
       await FirebaseFirestore.instance
           .collection('users')
           .doc(recievers_uid)
@@ -232,6 +232,7 @@ class _UserSearchState extends State<UserSearch> {
         'received_Requests': FieldValue.arrayUnion([CurrentUserUid]),
       });
       print('Friend request sent successfully.');
+      // Update senders sent requests field to include recievers UID
       await FirebaseFirestore.instance
           .collection('users')
           .doc(CurrentUserUid)
