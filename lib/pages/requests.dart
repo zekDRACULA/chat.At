@@ -61,8 +61,8 @@ class _RequestsState extends State<Requests> {
         builder: (context, AsyncSnapshot snapshot) {
           //make some checks
           if (snapshot.hasData) {
-            if (snapshot.data['friends'] != null) {
-              if (snapshot.data['friends'].length != 0) {
+            if (snapshot.data['recieved_Requests'] != null) {
+              if (snapshot.data['recieved_Requests'].length != 0) {
                 return const Text("Hello");
               } else {
                 return noRequestsWidget();

@@ -20,7 +20,8 @@ class _UserSearchState extends State<UserSearch> {
   String? _searchQuery = "";
   String SenderUserName = "";
   String SenderUserEmail = "";
-
+  String RecieverUid = "";
+  String RequestButton_text = "Send Request";
   User CurrentUser = FirebaseAuth.instance.currentUser!;
 
   final TextEditingController _searchController = TextEditingController();
@@ -112,6 +113,7 @@ class _UserSearchState extends State<UserSearch> {
               var filteredData = documents.where((doc) {
                 var data = doc.data() as Map<String, dynamic>;
                 String title = data['username'].toString().toLowerCase();
+
                 return title.contains(_searchQuery!.toLowerCase());
               }).toList();
 
@@ -121,6 +123,7 @@ class _UserSearchState extends State<UserSearch> {
                   itemBuilder: (context, index) {
                     var data =
                         filteredData[index].data() as Map<String, dynamic>;
+                    String recievers_uid = data["uid"];
                     return Card(
                         elevation: 5,
                         margin: const EdgeInsets.symmetric(
@@ -180,9 +183,9 @@ class _UserSearchState extends State<UserSearch> {
                                           ),
                                           ElevatedButton(
                                             onPressed: () {
-                                              //sendRequest();
-
-                                              return sendFriendRequest();
+                                              _changeButtonText();
+                                              sendFriendRequest(CurrentUser.uid,
+                                                  recievers_uid);
                                             },
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.black,
@@ -191,9 +194,10 @@ class _UserSearchState extends State<UserSearch> {
                                                     BorderRadius.circular(10),
                                               ),
                                             ),
-                                            child: const Text(
-                                              "Send Request",
-                                              style: TextStyle(fontSize: 20),
+                                            child: Text(
+                                              RequestButton_text,
+                                              style:
+                                                  const TextStyle(fontSize: 20),
                                             ),
                                           )
                                         ],
@@ -211,18 +215,33 @@ class _UserSearchState extends State<UserSearch> {
     );
   }
 
-  sendFriendRequest() async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          elevation: 50,
-          content: Column(
-            children: [Text(CurrentUser.uid)],
-          ),
-        );
-      },
-    );
+  void _changeButtonText() {
+    setState(() {
+      // Change the button text when pressed
+      RequestButton_text = 'Sent!';
+    });
+  }
+
+  void sendFriendRequest(String CurrentUserUid, String recievers_uid) async {
+    try {
+      // Update user B's receivedRequests field to include user A's UID
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(recievers_uid)
+          .update({
+        'received_Requests': FieldValue.arrayUnion([CurrentUserUid]),
+      });
+      print('Friend request sent successfully.');
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(CurrentUserUid)
+          .update({
+        'sent_Requests': FieldValue.arrayUnion([recievers_uid])
+      });
+      print('Friend sent erquest added successfully.');
+    } catch (e) {
+      print('Error sending friend request: $e');
+    }
   }
 
   Stream<QuerySnapshot> getDataRealTime() {

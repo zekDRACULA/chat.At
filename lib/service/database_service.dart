@@ -18,6 +18,8 @@ class DatabaseService {
       "email": email,
       "chats": [],
       "friends": [],
+      "recieved_Requests": [],
+      "sent_Requests": [],
       "profilePic": "",
       "uid": uid,
     });
