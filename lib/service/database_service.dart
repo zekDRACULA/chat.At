@@ -44,7 +44,9 @@ class DatabaseService {
     return userCollection.doc(uid).snapshots();
   }
 
-  getUserRequests() async {
-    return userCollection.doc(uid).snapshots();
+  Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getUserRequests() async {
+    return FirebaseFirestore.instance
+        .collection('recieved_Requests')
+        .snapshots();
   }
 }

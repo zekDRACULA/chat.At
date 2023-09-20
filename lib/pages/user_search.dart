@@ -31,25 +31,6 @@ class _UserSearchState extends State<UserSearch> {
   @override
   void initState() {
     super.initState();
-    gettingUserData();
-  }
-
-  gettingUserData() async {
-    await HelperFunctions.getUserEmailFromSf().then((value) {
-      setState(() {
-        SenderUserEmail = value!;
-      });
-    });
-    await HelperFunctions.getUserNameFromSF().then((val) {
-      setState(() {
-        SenderUserName = val!;
-      });
-    });
-    /* await HelperFunctions.getUserUidFromSf().then((va) {
-      setState(() {
-        CurrentUserUid = va!;
-      });
-    });*/
   }
 
   Widget build(BuildContext context) {
@@ -229,7 +210,7 @@ class _UserSearchState extends State<UserSearch> {
           .collection('users')
           .doc(recievers_uid)
           .update({
-        'received_Requests': FieldValue.arrayUnion([CurrentUserUid]),
+        'recieved_Requests': FieldValue.arrayUnion([CurrentUserUid]),
       });
       print('Friend request sent successfully.');
       // Update senders sent requests field to include recievers UID

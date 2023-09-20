@@ -1,5 +1,6 @@
 import 'package:chatapp/service/auth_service.dart';
 import 'package:chatapp/service/database_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +12,10 @@ class Requests extends StatefulWidget {
 }
 
 class _RequestsState extends State<Requests> {
-  Stream? requests;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? recievedRequests;
+
   AuthService authService = AuthService();
+
   @override
   void initState() {
     super.initState();
@@ -20,12 +23,15 @@ class _RequestsState extends State<Requests> {
   }
 
   gettingUserData() async {
-    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getUserRequests()
-        .then((snapshot) {
-      setState(() {
-        requests = snapshot;
-      });
+    final currentUserUid = FirebaseAuth.instance.currentUser!.uid;
+    final snapshot = FirebaseFirestore.instance
+        .collection('user')
+        .doc(currentUserUid)
+        .collection('recieved_Requests')
+        .snapshots();
+
+    setState(() {
+      recievedRequests = snapshot;
     });
   }
 
@@ -48,34 +54,75 @@ class _RequestsState extends State<Requests> {
             )),
       ),
       body: Stack(
-        children: <Widget>[
-          requestList(),
+        children: [
+          recievedRequestList(),
         ],
       ),
     );
   }
 
-  requestList() {
+  recievedRequestList() {
+    if (recievedRequests == null) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.black),
+      );
+    }
     return StreamBuilder(
-        stream: requests,
-        builder: (context, AsyncSnapshot snapshot) {
-          //make some checks
-          if (snapshot.hasData) {
-            if (snapshot.data['recieved_Requests'] != null) {
-              if (snapshot.data['recieved_Requests'].length != 0) {
-                return const Text("Hello");
-              } else {
-                return noRequestsWidget();
-              }
-            } else {
-              return noRequestsWidget();
-            }
-          } else {
+        stream: recievedRequests,
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(color: Colors.black),
             );
+          } else if (snapshot.hasError) {
+            print('Error: ${snapshot.error}');
+            return Text('Error: ${snapshot.error}');
+          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return noRequestsWidget();
+          } else {
+            final List<QueryDocumentSnapshot<Map<String, dynamic>>> documents =
+                snapshot.data!.docs;
+            return showRecievedRequests(documents);
           }
         });
+  }
+
+  showRecievedRequests(
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> documents) async {
+    return ListView.builder(
+      itemCount: documents.length,
+      itemBuilder: (context, index) {
+        final Map<String, dynamic> data = documents[index].data();
+        final String senderName = data['username'] as String;
+        final String senderEmail = data['email'] as String;
+        return Card(
+          elevation: 5,
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+          child: ListTile(
+            leading: const Icon(
+              Icons.account_circle_sharp,
+              color: Colors.black,
+              size: 60,
+            ),
+            title: Text(
+              senderName,
+              style: const TextStyle(
+                  fontFamily: "Borel",
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700),
+            ),
+            subtitle: Text(
+              senderEmail,
+              style: const TextStyle(
+                  fontFamily: "Borel",
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   noRequestsWidget() {
@@ -98,4 +145,8 @@ class _RequestsState extends State<Requests> {
       ),
     );
   }
+
+  //Stream<QuerySnapshot> getDataRealTime() {
+  // return FirebaseFirestore.instance.collection('users').snapshots();
+  //}
 }
