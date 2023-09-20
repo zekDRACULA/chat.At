@@ -12,8 +12,7 @@ class Requests extends StatefulWidget {
 }
 
 class _RequestsState extends State<Requests> {
-  Stream<QuerySnapshot<Map<String, dynamic>>>? recievedRequests;
-
+  List<String> recievedRequests = [];
   AuthService authService = AuthService();
 
   @override
@@ -24,14 +23,19 @@ class _RequestsState extends State<Requests> {
 
   gettingUserData() async {
     final currentUserUid = FirebaseAuth.instance.currentUser!.uid;
-    final snapshot = FirebaseFirestore.instance
-        .collection('user')
-        .doc(currentUserUid)
-        .collection('recieved_Requests')
-        .snapshots();
+    final userDocument =
+        FirebaseFirestore.instance.collection('users').doc(currentUserUid);
 
-    setState(() {
-      recievedRequests = snapshot;
+    // Assuming 'recieved_Requests' is an array field in the user's document
+    userDocument.get().then((docSnapshot) {
+      if (docSnapshot.exists) {
+        setState(() {
+          // this is a very important part as this takes recievedRequests as
+          //list in my older tries even i dont know in what format i was converting that shit
+          recievedRequests =
+              List<String>.from(docSnapshot['recieved_Requests']);
+        });
+      }
     });
   }
 
@@ -40,18 +44,19 @@ class _RequestsState extends State<Requests> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(69),
         child: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.black,
-            centerTitle: true,
-            title: const Text(
-              "Requests",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Borel',
-                fontSize: 30,
-                fontWeight: FontWeight.w200,
-              ),
-            )),
+          elevation: 0,
+          backgroundColor: Colors.black,
+          centerTitle: true,
+          title: const Text(
+            "Requests",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Borel',
+              fontSize: 30,
+              fontWeight: FontWeight.w200,
+            ),
+          ),
+        ),
       ),
       body: Stack(
         children: [
@@ -62,67 +67,71 @@ class _RequestsState extends State<Requests> {
   }
 
   recievedRequestList() {
-    if (recievedRequests == null) {
-      return const Center(
-        child: CircularProgressIndicator(color: Colors.black),
-      );
+    if (recievedRequests.isEmpty) {
+      return noRequestsWidget();
     }
-    return StreamBuilder(
-        stream: recievedRequests,
-        builder: (context,
-            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.black),
-            );
-          } else if (snapshot.hasError) {
-            print('Error: ${snapshot.error}');
-            return Text('Error: ${snapshot.error}');
-          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return noRequestsWidget();
-          } else {
-            final List<QueryDocumentSnapshot<Map<String, dynamic>>> documents =
-                snapshot.data!.docs;
-            return showRecievedRequests(documents);
-          }
-        });
-  }
 
-  showRecievedRequests(
-      List<QueryDocumentSnapshot<Map<String, dynamic>>> documents) async {
     return ListView.builder(
-      itemCount: documents.length,
+      itemCount: recievedRequests.length,
       itemBuilder: (context, index) {
-        final Map<String, dynamic> data = documents[index].data();
-        final String senderName = data['username'] as String;
-        final String senderEmail = data['email'] as String;
-        return Card(
-          elevation: 5,
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-          child: ListTile(
-            leading: const Icon(
-              Icons.account_circle_sharp,
-              color: Colors.black,
-              size: 60,
-            ),
-            title: Text(
-              senderName,
-              style: const TextStyle(
-                  fontFamily: "Borel",
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700),
-            ),
-            subtitle: Text(
-              senderEmail,
-              style: const TextStyle(
-                  fontFamily: "Borel",
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
+        final senderUid = recievedRequests[index];
+        return FutureBuilder(
+          future: getUserData(senderUid),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(color: Colors.black),
+              );
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              final senderData = snapshot.data as Map<String, dynamic>;
+              final senderName = senderData['username'] as String;
+              final senderEmail = senderData['email'] as String;
+
+              return Card(
+                elevation: 5,
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.account_circle_sharp,
+                    color: Colors.black,
+                    size: 60,
+                  ),
+                  title: Text(
+                    senderName,
+                    style: const TextStyle(
+                      fontFamily: "Borel",
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  subtitle: Text(
+                    senderEmail,
+                    style: const TextStyle(
+                      fontFamily: "Borel",
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              );
+            }
+          },
         );
       },
     );
+  }
+
+  Future<Map<String, dynamic>> getUserData(String uid) async {
+    final senderDocument =
+        FirebaseFirestore.instance.collection('users').doc(uid);
+    final senderSnapshot = await senderDocument.get();
+    if (senderSnapshot.exists) {
+      return senderSnapshot.data() as Map<String, dynamic>;
+    } else {
+      return {}; // Return an empty map if sender data is not found
+    }
   }
 
   noRequestsWidget() {
@@ -133,20 +142,17 @@ class _RequestsState extends State<Requests> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Center(
-              child: Text(
-            "No Request for now ^.^;",
-            style: TextStyle(
-              fontFamily: 'Borel',
-              fontSize: 25,
-              fontWeight: FontWeight.w900,
+            child: Text(
+              "No Request for now ^.^;",
+              style: TextStyle(
+                fontFamily: 'Borel',
+                fontSize: 25,
+                fontWeight: FontWeight.w900,
+              ),
             ),
-          ))
+          )
         ],
       ),
     );
   }
-
-  //Stream<QuerySnapshot> getDataRealTime() {
-  // return FirebaseFirestore.instance.collection('users').snapshots();
-  //}
 }
