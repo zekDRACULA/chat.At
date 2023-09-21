@@ -71,7 +71,6 @@ class _RequestsState extends State<Requests> {
                 nextScreen(context, FriendList());
               },
               shape: const CircleBorder(),
-              
               fillColor: Colors.black,
               child: const Icon(
                 Icons.notification_add,
