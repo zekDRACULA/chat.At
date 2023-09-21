@@ -15,6 +15,7 @@ class Requests extends StatefulWidget {
 
 class _RequestsState extends State<Requests> {
   List<String> recievedRequests = [];
+
   AuthService authService = AuthService();
 
   @override
@@ -27,6 +28,7 @@ class _RequestsState extends State<Requests> {
     final currentUserUid = FirebaseAuth.instance.currentUser!.uid;
     final userDocument =
         FirebaseFirestore.instance.collection('users').doc(currentUserUid);
+    //getting data from recieved_Requests list
 
     // Assuming 'recieved_Requests' is an array field in the user's document
     userDocument.get().then((docSnapshot) {
@@ -67,9 +69,7 @@ class _RequestsState extends State<Requests> {
             bottom: 25,
             right: 10,
             child: RawMaterialButton(
-              onPressed: () {
-                nextScreen(context, FriendList());
-              },
+              onPressed: () {},
               shape: const CircleBorder(),
               fillColor: Colors.black,
               child: const Icon(
@@ -84,6 +84,7 @@ class _RequestsState extends State<Requests> {
     );
   }
 
+// Method to show recieved requests
   recievedRequestList() {
     if (recievedRequests.isEmpty) {
       return noRequestsWidget();
@@ -141,6 +142,7 @@ class _RequestsState extends State<Requests> {
     );
   }
 
+//extracting user data
   Future<Map<String, dynamic>> getUserData(String uid) async {
     final senderDocument =
         FirebaseFirestore.instance.collection('users').doc(uid);
