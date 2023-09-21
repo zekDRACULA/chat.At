@@ -1,5 +1,7 @@
+import 'package:chatapp/pages/auth/friend_list.dart';
 import 'package:chatapp/service/auth_service.dart';
 import 'package:chatapp/service/database_service.dart';
+import 'package:chatapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -59,8 +61,25 @@ class _RequestsState extends State<Requests> {
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           recievedRequestList(),
+          Positioned(
+            bottom: 25,
+            right: 10,
+            child: RawMaterialButton(
+              onPressed: () {
+                nextScreen(context, FriendList());
+              },
+              shape: const CircleBorder(),
+              
+              fillColor: Colors.black,
+              child: const Icon(
+                Icons.notification_add,
+                color: Colors.white,
+                size: 55,
+              ),
+            ),
+          ),
         ],
       ),
     );

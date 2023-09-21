@@ -1,3 +1,4 @@
+//un updated user_search
 import 'dart:core';
 
 import 'package:chatapp/helper/helper_function.dart';
@@ -11,7 +12,7 @@ import 'package:flutter/material.dart';
 
 class UserSearch extends StatefulWidget {
   UserSearch({super.key});
-  final TextEditingController _searchController = TextEditingController();
+
   @override
   State<UserSearch> createState() => _UserSearchState();
 }
@@ -22,6 +23,7 @@ class _UserSearchState extends State<UserSearch> {
   String SenderUserEmail = "";
   String RecieverUid = "";
   String RequestButton_text = "Send Request";
+
   User CurrentUser = FirebaseAuth.instance.currentUser!;
 
   final TextEditingController _searchController = TextEditingController();
@@ -95,13 +97,17 @@ class _UserSearchState extends State<UserSearch> {
                 var data = doc.data() as Map<String, dynamic>;
                 String title = data['username'].toString().toLowerCase();
 
-                return title.contains(_searchQuery!.toLowerCase());
+                return title.contains(_searchQuery!.toLowerCase()) &&
+                    data['uid'] != CurrentUser.uid;
               }).toList();
 
               return Expanded(
                 child: ListView.builder(
                   itemCount: filteredData.length,
                   itemBuilder: (context, index) {
+                    // data =
+                    //  filteredData[index].data() as Map<String, dynamic>;
+                    // String recievers_uid = data["uid"];
                     var data =
                         filteredData[index].data() as Map<String, dynamic>;
                     String recievers_uid = data["uid"];
