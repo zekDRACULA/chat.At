@@ -128,13 +128,6 @@ class _UserSearchState extends State<UserSearch> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700),
                             ),
-                            subtitle: Text(
-                              data["email"],
-                              style: const TextStyle(
-                                  fontFamily: "Borel",
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600),
-                            ),
                             onTap: () {
                               showDialog(
                                   context: context,

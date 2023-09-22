@@ -70,12 +70,14 @@ class _RequestsState extends State<Requests> {
             right: 10,
             child: RawMaterialButton(
               onPressed: () {},
+              elevation: 20,
+              padding: EdgeInsets.all(8.0),
               shape: const CircleBorder(),
               fillColor: Colors.black,
               child: const Icon(
                 Icons.notification_add,
                 color: Colors.white,
-                size: 55,
+                size: 45,
               ),
             ),
           ),

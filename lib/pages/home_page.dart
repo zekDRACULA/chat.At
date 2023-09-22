@@ -86,15 +86,18 @@ class _HomePageState extends State<HomePage> {
             bottom: 25,
             right: 10,
             child: RawMaterialButton(
+              //textStyle: ,
               onPressed: () {
                 nextScreen(context, FriendList());
               },
+              elevation: 20,
+              padding: EdgeInsets.all(16.0),
               shape: const CircleBorder(),
               fillColor: Colors.black,
               child: const Icon(
-                Icons.add,
+                Icons.message_sharp,
                 color: Colors.white,
-                size: 55,
+                size: 45,
               ),
             ),
           ),
