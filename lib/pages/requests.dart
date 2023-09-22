@@ -15,7 +15,7 @@ class Requests extends StatefulWidget {
 
 class _RequestsState extends State<Requests> {
   List<String> recievedRequests = [];
-
+  String? currentUserUid;
   AuthService authService = AuthService();
 
   @override
@@ -25,7 +25,7 @@ class _RequestsState extends State<Requests> {
   }
 
   gettingUserData() async {
-    final currentUserUid = FirebaseAuth.instance.currentUser!.uid;
+    currentUserUid = FirebaseAuth.instance.currentUser!.uid;
     final userDocument =
         FirebaseFirestore.instance.collection('users').doc(currentUserUid);
     //getting data from recieved_Requests list
@@ -64,7 +64,7 @@ class _RequestsState extends State<Requests> {
       ),
       body: Stack(
         children: <Widget>[
-          recievedRequestList(),
+          recievedRequestList(currentUserUid),
           Positioned(
             bottom: 25,
             right: 10,
@@ -85,7 +85,7 @@ class _RequestsState extends State<Requests> {
   }
 
 // Method to show recieved requests
-  recievedRequestList() {
+  recievedRequestList(currentUserUid) {
     if (recievedRequests.isEmpty) {
       return noRequestsWidget();
     }
@@ -170,7 +170,10 @@ class _RequestsState extends State<Requests> {
                                         width: 20,
                                       ),
                                       ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          AcceptFriendRequest(
+                                              currentUserUid, senderUid);
+                                        },
                                         style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.black),
                                         child: const Text(
@@ -182,7 +185,10 @@ class _RequestsState extends State<Requests> {
                                         width: 50,
                                       ),
                                       ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          rejectFriendRequest(
+                                              currentUserUid, senderUid);
+                                        },
                                         style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.black),
                                         child: const Text(
@@ -207,7 +213,52 @@ class _RequestsState extends State<Requests> {
 
 //Accept Request
 
-  acceptFriendRequests() {}
+  friendRequestsActions(String currentUserUid, String senderUid) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return Card(
+            child: Text(currentUserUid),
+          );
+        });
+  }
+
+// acccessing currentusers recievedRequests
+//to move it to friends list and delete from recievedRequests
+//and doing same for sender oppositely(if its a word)
+  void AcceptFriendRequest(String currentUserUid, String senderUid) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUserUid)
+        .update({
+      'friends': FieldValue.arrayUnion([senderUid])
+    });
+    print("Senderuid Added to friend list successfully!!!!");
+
+    await FirebaseFirestore.instance.collection('users').doc(senderUid).update({
+      'friends': FieldValue.arrayUnion([currentUserUid])
+    });
+    print("currentUserUid Added to friend list successfully!!!!");
+    await FirebaseFirestore.instance.collection('users').doc(senderUid).update({
+      'sent_Requests': FieldValue.arrayRemove([currentUserUid])
+    });
+    print("currentUserUid removed from  sent_Requests successfully!!!!");
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUserUid)
+        .update({
+      'recieved_Requests': FieldValue.arrayRemove([senderUid])
+    });
+    print("Senderuid removed from recieved_Requests  successfully!!!!");
+  }
+
+  rejectFriendRequest(String currentUserUid, String senderUid) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return const Card(child: Text("Rejected"));
+        });
+  }
 
 //extracting user data
   Future<Map<String, dynamic>> getUserData(String uid) async {
