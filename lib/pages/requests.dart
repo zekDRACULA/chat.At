@@ -213,16 +213,6 @@ class _RequestsState extends State<Requests> {
 
 //Accept Request
 
-  friendRequestsActions(String currentUserUid, String senderUid) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return Card(
-            child: Text(currentUserUid),
-          );
-        });
-  }
-
 // acccessing currentusers recievedRequests
 //to move it to friends list and delete from recievedRequests
 //and doing same for sender oppositely(if its a word)
@@ -252,12 +242,20 @@ class _RequestsState extends State<Requests> {
     print("Senderuid removed from recieved_Requests  successfully!!!!");
   }
 
-  rejectFriendRequest(String currentUserUid, String senderUid) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return const Card(child: Text("Rejected"));
-        });
+//Rejecting a friend requests
+
+  void rejectFriendRequest(String currentUserUid, String senderUid) async {
+    await FirebaseFirestore.instance.collection('users').doc(senderUid).update({
+      'sent_Requests': FieldValue.arrayRemove([currentUserUid])
+    });
+    print("currentUserUid removed from recieved_Requests  successfully!!!!");
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUserUid)
+        .update({
+      'recieved_Requests': FieldValue.arrayRemove([senderUid])
+    });
+    print("Senderuid removed from recieved_Requests  successfully!!!!");
   }
 
 //extracting user data
