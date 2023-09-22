@@ -183,8 +183,9 @@ class _UserSearchState extends State<UserSearch> {
                                             ),
                                             child: Text(
                                               RequestButton_text,
-                                              style:
-                                                  const TextStyle(fontSize: 20),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                              ),
                                             ),
                                           )
                                         ],

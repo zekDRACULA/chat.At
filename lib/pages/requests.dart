@@ -133,6 +133,69 @@ class _RequestsState extends State<Requests> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            elevation: 25,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.account_circle_sharp,
+                                    size: 150,
+                                    color: Colors.black,
+                                  ),
+                                  Text(
+                                    senderName,
+                                    style: const TextStyle(
+                                        fontFamily: "Borel",
+                                        fontStyle: FontStyle.italic,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                  Text(senderEmail,
+                                      style: const TextStyle(
+                                          fontFamily: 'Borel',
+                                          fontStyle: FontStyle.italic,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20)),
+                                  Row(
+                                    children: [
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.black),
+                                        child: const Text(
+                                          "Accept",
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 50,
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.black),
+                                        child: const Text(
+                                          "Reject",
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ]),
+                          );
+                        });
+                  },
                 ),
               );
             }
@@ -141,6 +204,10 @@ class _RequestsState extends State<Requests> {
       },
     );
   }
+
+//Accept Request
+
+  acceptFriendRequests() {}
 
 //extracting user data
   Future<Map<String, dynamic>> getUserData(String uid) async {
