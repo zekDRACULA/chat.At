@@ -554,36 +554,7 @@ class _FriendListState extends State<FriendList> {
 // chat button
 
                         trailing: RawMaterialButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      elevation: 25,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.account_circle_sharp,
-                                            size: 150,
-                                            color: Colors.black,
-                                          ),
-                                          Text(
-                                            friendName,
-                                            style: const TextStyle(
-                                                fontFamily: 'Borel',
-                                                fontStyle: FontStyle.italic,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 25),
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  });
-                            },
+                            onPressed: () {},
                             child: const Padding(
                               padding: EdgeInsets.symmetric(vertical: 15),
                               child: Icon(
