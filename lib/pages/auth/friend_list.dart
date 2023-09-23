@@ -9,6 +9,7 @@ import 'package:chatapp/pages/user_search.dart';
 import 'package:chatapp/service/auth_service.dart';
 import 'package:chatapp/service/database_service.dart';
 import 'package:chatapp/widgets/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
@@ -24,7 +25,8 @@ class _FriendListState extends State<FriendList> {
   //String key = "";
   String userName = "";
   String email = "";
-  Stream? friends;
+  List<String> friendlist = [];
+  String? currentUserUid;
   AuthService authService = AuthService();
 
   @override
@@ -34,6 +36,7 @@ class _FriendListState extends State<FriendList> {
   }
 
   gettingUserData() async {
+    currentUserUid = FirebaseAuth.instance.currentUser!.uid;
     await HelperFunctions.getUserEmailFromSf().then((value) {
       setState(() {
         email = value!;
@@ -49,7 +52,17 @@ class _FriendListState extends State<FriendList> {
         .getUserFriends()
         .then((snapshot) {
       setState(() {
-        friends = snapshot;
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUserUid)
+            .get()
+            .then((docSnapshot) {
+          if (docSnapshot.exists) {
+            setState(() {
+              friendlist = List<String>.from(docSnapshot['friends']);
+            });
+          }
+        });
       });
     });
   }
@@ -349,26 +362,60 @@ class _FriendListState extends State<FriendList> {
   }
 
   friendList() {
-    return StreamBuilder(
-        stream: friends,
-        builder: (context, AsyncSnapshot snapshot) {
-          //make some checks
-          if (snapshot.hasData) {
-            if (snapshot.data['friends'] != null) {
-              if (snapshot.data['friends'].length != 0) {
-                return const Text("Hello");
+    if (friendlist.isEmpty) {
+      return noFrinedsWidget();
+    }
+    return ListView.builder(
+      itemCount: friendlist.length,
+      itemBuilder: (context, index) {
+        final friendUid = friendlist[index];
+        return FutureBuilder(
+            future: getUserData(friendUid),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ),
+                );
+              } else if (snapshot.hasData) {
+                return Text('Error: ${snapshot.error}');
               } else {
-                return noFrinedsWidget();
+                final friendData = snapshot.data as Map<String, dynamic>;
+                final friendName = friendData['username'] as String;
+                final friendEmail = friendData['email'] as String;
+
+                return Card(
+                  elevation: 1,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.account_circle_sharp,
+                      color: Colors.black,
+                      size: 60,
+                    ),
+                    title: Text(
+                      friendName,
+                    ),
+                  ),
+                );
               }
-            } else {
-              return noFrinedsWidget();
-            }
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.black),
-            );
-          }
-        });
+            });
+      },
+    );
+  }
+
+  //extracting User Data
+  Future<Map<String, dynamic>> getUserData(String uid) async {
+    final friendDocument =
+        FirebaseFirestore.instance.collection('users').doc(uid);
+    final friendSnapshot = await friendDocument.get();
+    if (friendSnapshot.exists) {
+      return friendSnapshot.data() as Map<String, dynamic>;
+    } else {
+      return {}; // Return an empty map if sender data is not found
+    }
   }
 
   noFrinedsWidget() {

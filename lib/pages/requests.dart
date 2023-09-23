@@ -34,8 +34,8 @@ class _RequestsState extends State<Requests> {
     userDocument.get().then((docSnapshot) {
       if (docSnapshot.exists) {
         setState(() {
-          // this is a very important part as this takes recievedRequests as
-          //list in my older tries even i dont know in what format i was converting that shit
+          // this is a very important part as this takes recievedRequests as list
+          // in my older tries even i dont know in what format i was converting that shit
           recievedRequests =
               List<String>.from(docSnapshot['recieved_Requests']);
         });
