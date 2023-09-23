@@ -378,7 +378,7 @@ class _FriendListState extends State<FriendList> {
                     color: Colors.black,
                   ),
                 );
-              } else if (snapshot.hasData) {
+              } else if (!snapshot.hasData) {
                 return Text('Error: ${snapshot.error}');
               } else {
                 final friendData = snapshot.data as Map<String, dynamic>;
@@ -386,7 +386,7 @@ class _FriendListState extends State<FriendList> {
                 final friendEmail = friendData['email'] as String;
 
                 return Card(
-                  elevation: 1,
+                  elevation: 5,
                   margin:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                   child: ListTile(
