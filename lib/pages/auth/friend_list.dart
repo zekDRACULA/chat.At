@@ -1,7 +1,6 @@
 import 'package:chatapp/helper/helper_function.dart';
 import 'package:chatapp/pages/auth/Login_Page.dart';
-import 'package:chatapp/pages/auth/friend_list.dart';
-import 'package:chatapp/pages/auth/search_page.dart';
+import 'package:chatapp/pages/chat_page.dart';
 import 'package:chatapp/pages/home_page.dart';
 import 'package:chatapp/pages/profile_page.dart';
 import 'package:chatapp/pages/requests.dart';
@@ -426,6 +425,14 @@ class _FriendListState extends State<FriendList> {
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 25),
                                           ),
+                                          Text(
+                                            friendEmail,
+                                            style: const TextStyle(
+                                                fontFamily: 'Borel',
+                                                fontStyle: FontStyle.italic,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 25),
+                                          ),
                                           Center(
                                               child: ElevatedButton(
                                             onPressed: () {
@@ -554,7 +561,14 @@ class _FriendListState extends State<FriendList> {
 // chat button
 
                         trailing: RawMaterialButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              nextScreen(
+                                  context,
+                                  chat_page(
+                                    currentUserUid: currentUserUid,
+                                    friendUid: friendUid,
+                                  ));
+                            },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(vertical: 15),
                               child: Icon(
