@@ -129,62 +129,7 @@ class _UserSearchState extends State<UserSearch> {
                                   fontWeight: FontWeight.w700),
                             ),
                             onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      elevation: 25,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.account_circle_sharp,
-                                            size: 150,
-                                            color: Colors.black,
-                                          ),
-                                          Text(
-                                            data["username"],
-                                            style: const TextStyle(
-                                                fontFamily: "Borel",
-                                                fontStyle: FontStyle.italic,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 30),
-                                          ),
-                                          Text(
-                                            data["email"],
-                                            style: const TextStyle(
-                                                fontFamily: "Borel",
-                                                fontStyle: FontStyle.italic,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20),
-                                          ),
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              _changeButtonText();
-                                              sendFriendRequest(CurrentUser.uid,
-                                                  recievers_uid);
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.black,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              RequestButton_text,
-                                              style: const TextStyle(
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  });
+                              _showAlertDialog(data, recievers_uid);
                             }));
                   },
                 ),
@@ -196,14 +141,68 @@ class _UserSearchState extends State<UserSearch> {
     );
   }
 
-  void _changeButtonText() {
-    setState(() {
-      // Change the button text when pressed
-      RequestButton_text = 'Sent!';
-    });
+  void _showAlertDialog(Map<String, dynamic> data, String recievers_uid) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              elevation: 25,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.account_circle_sharp,
+                    size: 150,
+                    color: Colors.black,
+                  ),
+                  Text(
+                    data["username"],
+                    style: const TextStyle(
+                      fontFamily: "Borel",
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                    ),
+                  ),
+                  Text(
+                    data["email"],
+                    style: const TextStyle(
+                      fontFamily: "Borel",
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      sendFriendRequest(CurrentUser.uid, recievers_uid);
+                      setState(() {
+                        RequestButton_text = 'Sent!'; // Update the button text.
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(RequestButton_text),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
-  void sendFriendRequest(String CurrentUserUid, String recievers_uid) async {
+  sendFriendRequest(String CurrentUserUid, String recievers_uid) async {
     try {
       // Update recievers receivedRequests field to include senders UID
       await FirebaseFirestore.instance
