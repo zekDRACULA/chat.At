@@ -22,7 +22,7 @@ class _chat_pageState extends State<chat_page> {
   String? currentUserName;
   String? friendName;
   AuthService authService = AuthService();
-
+  TextEditingController messageController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -51,18 +51,77 @@ class _chat_pageState extends State<chat_page> {
           elevation: 0,
           backgroundColor: Colors.black,
           centerTitle: true,
-          title: Text(friendName ??
-              'Friend'), // Display friend's name or a default value
+          title: Text(
+            friendName ?? 'Friend',
+            style: TextStyle(fontFamily: 'Borel'),
+          ),
+          // Display friend's name or a default value
         ),
       ),
       body: Stack(
-        children: [
-          Text(currentUserName ?? 'User')
+        children: <Widget>[
+          //chatMessages(),
+          Column(
+            mainAxisAlignment: MainAxisAlignment
+                .end, // Pushes the inner container to the bottom
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 2), // Adjust the horizontal padding as needed
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: messageController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            hintText: "Send Message....",
+                            hintStyle: TextStyle(
+                              fontFamily: 'Borel',
+                              color: Colors.white,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30)),
+                        child: const Center(
+                          child: Icon(
+                            Icons.send,
+                            color: Colors.black,
+                            size: 35,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 2), // Adjust the height as needed
+            ],
+          ),
         ], // Display current user's name or a default value
       ),
     );
   }
 
+  chatMessages() {}
   Future<Map<String, dynamic>> getUserData(
       String currentUserUid, String friendUid) async {
     final CurrentUserDoc = await FirebaseFirestore.instance
