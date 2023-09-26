@@ -37,7 +37,8 @@ class _ChatPageState extends State<ChatPage> {
   void sendMessage() {
     String messageText = messageController.text.trim();
     if (messageText.isNotEmpty) {
-      DatabaseService().sendMessage(widget.chatId!, widget.currentUserUid!, messageText);
+      DatabaseService()
+          .sendMessage(widget.chatId!, widget.currentUserUid!, messageText);
       messageController.clear();
     }
   }

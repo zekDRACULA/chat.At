@@ -92,8 +92,7 @@ class DatabaseService {
         chatCollection.doc(chatId).collection('messages');
 
     // Create a query to filter messages by the sender's UID
-    final messagesQuery =
-        messagesCollection.orderBy('timestamp', descending: true);
+    final messagesQuery = messagesCollection.orderBy('timestamp');
 
     // Return a stream of query snapshots to listen for new messages
     return messagesQuery.snapshots();
