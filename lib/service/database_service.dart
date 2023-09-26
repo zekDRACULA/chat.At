@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class DatabaseService {
   final String? uid;
@@ -37,16 +36,20 @@ class DatabaseService {
   }
 
   // get user chats
-  Future<List<String>> getUserChats() async {
+  Future<List<dynamic>> getUserChats() async {
     try {
-      String uid = FirebaseAuth.instance.currentUser!.uid;
-      QuerySnapshot chatSnapshot =
-          await chatCollection.where('participants', arrayContains: uid).get();
+      DocumentSnapshot documentSnapshot = await userCollection.doc(uid).get();
+      Map<String, dynamic>? userData =
+          documentSnapshot.data() as Map<String, dynamic>?;
 
-      List<String> chatIds = chatSnapshot.docs.map((doc) => doc.id).toList();
-      return chatIds;
+      if (userData != null) {
+        List? chatsData = userData['chats'] as List<dynamic>?;
+        return chatsData ?? [];
+      } else {
+        return [];
+      }
     } catch (e) {
-      print("Error getting user chats: $e");
+      print(e.toString());
       return [];
     }
   }
