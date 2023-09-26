@@ -30,34 +30,33 @@ class _HomePageState extends State<HomePage> {
     gettingUserData();
   }
 
- gettingUserData() async {
-  await HelperFunctions.getUserEmailFromSf().then((value) {
-    setState(() {
-      email = value!;
+  gettingUserData() async {
+    await HelperFunctions.getUserEmailFromSf().then((value) {
+      setState(() {
+        email = value!;
+      });
     });
-  });
-  await HelperFunctions.getUserNameFromSF().then((val) {
-    setState(() {
-      userName = val!;
+    await HelperFunctions.getUserNameFromSF().then((val) {
+      setState(() {
+        userName = val!;
+      });
     });
-  });
 
-  // Getting the list of snapshots in chat stream
-  await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-      .getUserChats()
-      .then((dynamic snapshot) {
-    setState(() {
-      chats = snapshot; // Assign the List directly
+    // Getting the list of snapshots in chat stream
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getUserChats()
+        .then((snapshot) {
+      setState(() {
+        chats != snapshot; // Assign the List directly
+      });
     });
-  });
 
-  await DatabaseService().getChats().then((snapshot) {
-    setState(() {
-      chats = snapshot;
+    await DatabaseService().getChats().then((snapshot) {
+      setState(() {
+        chats != snapshot;
+      });
     });
-  });
-}
-
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
