@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   // Getting the list of snapshots in chat stream
   await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
       .getUserChats()
-      .then((List<dynamic> snapshot) {
+      .then((dynamic snapshot) {
     setState(() {
       chats = snapshot; // Assign the List directly
     });
