@@ -42,14 +42,14 @@ class _HomePageState extends State<HomePage> {
       });
     });
 
-    // Getting the list of snapshots in chat stream
-    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getUserChats()
-        .then((List<dynamic> snapshot) {
-      setState(() {
-        chats = snapshot as Stream<List>?; // Assign the List directly
-      });
+  // Getting the list of snapshots in chat stream
+  await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+      .getUserChats()
+      .then((List<dynamic> snapshot) {
+    setState(() {
+      chats = snapshot; // Assign the List directly
     });
+  });
 
     await DatabaseService().getChats().then((snapshot) {
       setState(() {
