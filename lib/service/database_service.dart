@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DatabaseService {
   final String? uid;
@@ -90,7 +91,7 @@ class DatabaseService {
     final messagesCollection =
         chatCollection.doc(chatId).collection('messages');
 
-    // Create a query to order messages by timestamp
+    // Create a query to filter messages by the sender's UID
     final messagesQuery =
         messagesCollection.orderBy('timestamp', descending: true);
 
