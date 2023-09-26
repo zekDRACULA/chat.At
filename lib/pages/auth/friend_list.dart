@@ -25,6 +25,7 @@ class _FriendListState extends State<FriendList> {
   String userName = "";
   String email = "";
   List<String> friendlist = [];
+  String? chatId;
   String? currentUserUid;
   AuthService authService = AuthService();
 
@@ -360,6 +361,18 @@ class _FriendListState extends State<FriendList> {
             )));
   }
 
+  // Function to get the chatId
+  Future<void> getChatId(String currentUserUid, String friendUid) async {
+    // You can customize this logic to determine how you want to create or fetch the chatId
+    // For example, you can concatenate the UIDs of the current user and friendUid
+    chatId = currentUserUid.hashCode <= friendUid.hashCode
+        ? '$currentUserUid-$friendUid'
+        : '$friendUid-$currentUserUid';
+
+    // Now, chatId contains the unique chat identifier
+    print('Chat ID: $chatId');
+  }
+
   friendList() {
     if (friendlist.isEmpty) {
       return noFrinedsWidget();
@@ -384,201 +397,212 @@ class _FriendListState extends State<FriendList> {
                 final friendName = friendData['username'] as String;
                 final friendEmail = friendData['email'] as String;
 
-                return Container(
-                    height: 80,
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(10), // Rounded corners
-                        side: const BorderSide(
-                            color: Colors.black, width: 1), // Optional border
-                      ),
-                      elevation: 3,
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 10),
-                      child: ListTile(
+                if (currentUserUid != null) {
+                  // Check if currentUserUid is not null
+                  getChatId(currentUserUid!, friendUid);
+                  return Container(
+                      height: 80,
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
+                          side: const BorderSide(
+                              color: Colors.black, width: 1), // Optional border
+                        ),
+                        elevation: 3,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 10),
+                        child: ListTile(
 //profile button with remove friend compatibility
 
-                        leading: RawMaterialButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      elevation: 25,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.account_circle_sharp,
-                                            size: 150,
-                                            color: Colors.black,
-                                          ),
-                                          Text(
-                                            friendName,
-                                            style: const TextStyle(
-                                                fontFamily: 'Borel',
-                                                fontStyle: FontStyle.italic,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 25),
-                                          ),
-                                          Text(
-                                            friendEmail,
-                                            style: const TextStyle(
-                                                fontFamily: 'Borel',
-                                                fontStyle: FontStyle.italic,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 25),
-                                          ),
-                                          Center(
-                                              child: ElevatedButton(
-                                            onPressed: () {
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          "Remove  friend"),
-                                                      content: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          const Text(
-                                                              "Are you sure you want to Remove friend?"),
-                                                          const SizedBox(
-                                                            height: 10,
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .end,
-                                                            children: [
-                                                              // removing friend coompatibility
-                                                              ElevatedButton(
-                                                                onPressed:
-                                                                    () async {
-                                                                  await FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'users')
-                                                                      .doc(
-                                                                          friendUid)
-                                                                      .update({
-                                                                    'friends':
-                                                                        FieldValue
-                                                                            .arrayRemove([
-                                                                      currentUserUid
-                                                                    ])
-                                                                  });
-                                                                  print(
-                                                                      "currentUserUid removed  from friend list of friend");
-                                                                  await FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'users')
-                                                                      .doc(
-                                                                          currentUserUid)
-                                                                      .update({
-                                                                    'friends':
-                                                                        FieldValue
-                                                                            .arrayRemove([
-                                                                      friendUid
-                                                                    ])
-                                                                  });
-                                                                  print(
-                                                                      "friendUid removed from Current user friendlist");
-                                                                },
-                                                                style: ElevatedButton
-                                                                    .styleFrom(
-                                                                        backgroundColor:
-                                                                            Colors.black),
-                                                                child:
-                                                                    const Text(
-                                                                        "Yes"),
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 20,
-                                                              ),
-                                                              ElevatedButton(
-                                                                onPressed: () {
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                },
-                                                                style: ElevatedButton
-                                                                    .styleFrom(
-                                                                        backgroundColor:
-                                                                            Colors.black),
-                                                                child: const Text(
-                                                                    "Cancel"),
-                                                              )
-                                                            ],
-                                                          )
-                                                        ],
-                                                      ),
-                                                    );
-                                                  });
-                                              // nextScreenReplace(context, const LoginPage());
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                                elevation: 5,
-                                                backgroundColor: Colors.black),
-                                            child: const Text(
-                                              "Remove",
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                              ),
+                          leading: RawMaterialButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        elevation: 25,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              Icons.account_circle_sharp,
+                                              size: 150,
+                                              color: Colors.black,
                                             ),
-                                          ))
-                                        ],
-                                      ),
-                                    );
-                                  });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 2),
-                              child: Icon(
-                                Icons.account_circle_sharp,
-                                color: Colors.black,
-                                size: 60,
+                                            Text(
+                                              friendName,
+                                              style: const TextStyle(
+                                                  fontFamily: 'Borel',
+                                                  fontStyle: FontStyle.italic,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 25),
+                                            ),
+                                            Text(
+                                              friendEmail,
+                                              style: const TextStyle(
+                                                  fontFamily: 'Borel',
+                                                  fontStyle: FontStyle.italic,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 25),
+                                            ),
+                                            Center(
+                                                child: ElevatedButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            "Remove  friend"),
+                                                        content: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            const Text(
+                                                                "Are you sure you want to Remove friend?"),
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                // removing friend coompatibility
+                                                                ElevatedButton(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    await FirebaseFirestore
+                                                                        .instance
+                                                                        .collection(
+                                                                            'users')
+                                                                        .doc(
+                                                                            friendUid)
+                                                                        .update({
+                                                                      'friends':
+                                                                          FieldValue
+                                                                              .arrayRemove([
+                                                                        currentUserUid
+                                                                      ])
+                                                                    });
+                                                                    print(
+                                                                        "currentUserUid removed  from friend list of friend");
+                                                                    await FirebaseFirestore
+                                                                        .instance
+                                                                        .collection(
+                                                                            'users')
+                                                                        .doc(
+                                                                            currentUserUid)
+                                                                        .update({
+                                                                      'friends':
+                                                                          FieldValue
+                                                                              .arrayRemove([
+                                                                        friendUid
+                                                                      ])
+                                                                    });
+                                                                    print(
+                                                                        "friendUid removed from Current user friendlist");
+                                                                  },
+                                                                  style: ElevatedButton.styleFrom(
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .black),
+                                                                  child:
+                                                                      const Text(
+                                                                          "Yes"),
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 20,
+                                                                ),
+                                                                ElevatedButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                  style: ElevatedButton.styleFrom(
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .black),
+                                                                  child: const Text(
+                                                                      "Cancel"),
+                                                                )
+                                                              ],
+                                                            )
+                                                          ],
+                                                        ),
+                                                      );
+                                                    });
+                                                // nextScreenReplace(context, const LoginPage());
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  elevation: 5,
+                                                  backgroundColor:
+                                                      Colors.black),
+                                              child: const Text(
+                                                "Remove",
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                ),
+                                              ),
+                                            ))
+                                          ],
+                                        ),
+                                      );
+                                    });
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 2),
+                                child: Icon(
+                                  Icons.account_circle_sharp,
+                                  color: Colors.black,
+                                  size: 60,
+                                ),
+                              )),
+                          title: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 1, horizontal: 5),
+                            child: Text(
+                              friendName,
+                              style: const TextStyle(
+                                //fontFamily: "Borel",
+                                fontSize: 25,
+                                fontWeight: FontWeight.w700,
                               ),
-                            )),
-                        title: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 1, horizontal: 5),
-                          child: Text(
-                            friendName,
-                            style: const TextStyle(
-                              //fontFamily: "Borel",
-                              fontSize: 25,
-                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                        ),
 
 // chat button
 
-                        trailing: RawMaterialButton(
-                            onPressed: () {
-                              nextScreen(
-                                  context,
-                                  chat_page(
-                                    currentUserUid: currentUserUid,
-                                    friendUid: friendUid,
-                                  ));
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 15),
-                              child: Icon(
-                                Icons.chat,
-                                color: Colors.black,
-                                size: 40,
-                              ),
-                            )),
-                      ),
-                    ));
+                          trailing: RawMaterialButton(
+                              onPressed: () {
+                                nextScreen(
+                                    context,
+                                    ChatPage(
+                                      currentUserUid: currentUserUid,
+                                      friendUid: friendUid,
+                                      chatId: chatId,
+                                    ));
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 15),
+                                child: Icon(
+                                  Icons.chat,
+                                  color: Colors.black,
+                                  size: 40,
+                                ),
+                              )),
+                        ),
+                      ));
+                } else {
+                  // Handle the case where currentUserUid is null
+                  return Container(); // You can return an empty container or handle this differently
+                }
               }
             });
       },

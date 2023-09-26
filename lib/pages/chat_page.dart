@@ -1,148 +1,109 @@
-import 'package:chatapp/helper/helper_function.dart';
-import 'package:chatapp/service/auth_service.dart';
-import 'package:chatapp/service/database_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chatapp/service/database_service.dart'; // Import your DatabaseService
 
-class chat_page extends StatefulWidget {
+class ChatPage extends StatefulWidget {
   final String? currentUserUid;
   final String? friendUid;
+  final String? chatId; // Pass the chat ID to the chat page
 
-  const chat_page({
-    super.key,
+  const ChatPage({
+    Key? key,
     required this.currentUserUid,
     required this.friendUid,
-  });
+    required this.chatId, // Receive the chat ID here
+  }) : super(key: key);
 
   @override
-  State<chat_page> createState() => _chat_pageState();
+  _ChatPageState createState() => _ChatPageState();
 }
 
-class _chat_pageState extends State<chat_page> {
-  String? currentUserName;
-  String? friendName;
-  AuthService authService = AuthService();
+class _ChatPageState extends State<ChatPage> {
+  Stream<QuerySnapshot>? messages; // Stream for chat messages
   TextEditingController messageController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    loadUserData();
+    loadChatMessages();
   }
 
-  Future<void> loadUserData() async {
-    Map<String, dynamic> userData =
-        await getUserData(widget.currentUserUid!, widget.friendUid!);
-
-    DocumentSnapshot? currentUserDoc = userData['currentUserDoc'];
-    DocumentSnapshot? friendDoc = userData['friendDoc'];
-
-    // Now you can access the data from these documents, e.g., user name and friend name.
-    setState(() {
-      currentUserName = currentUserDoc?['username'];
-      friendName = friendDoc?['username'];
-    });
+  // Load chat messages for the given chat ID
+  void loadChatMessages() {
+    messages = DatabaseService().getChatMessages(widget.chatId!);
   }
 
+  // Send a message to the chat
+  void sendMessage() {
+    String messageText = messageController.text.trim();
+    if (messageText.isNotEmpty) {
+      DatabaseService().sendMessage(widget.chatId!, widget.currentUserUid!, messageText);
+      messageController.clear();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(69),
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.black,
-          centerTitle: true,
-          title: Text(
-            friendName ?? 'Friend',
-            style: TextStyle(fontFamily: 'Borel'),
-          ),
-          // Display friend's name or a default value
-        ),
+      appBar: AppBar(
+        title: Text('Chat'), // Display the chat title or friend's name
       ),
-      body: Stack(
-        children: <Widget>[
-          //chatMessages(),
-          Column(
-            mainAxisAlignment: MainAxisAlignment
-                .end, // Pushes the inner container to the bottom
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 2), // Adjust the horizontal padding as needed
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: messageController,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
-                            hintText: "Send Message....",
-                            hintStyle: TextStyle(
-                              fontFamily: 'Borel',
-                              color: Colors.white,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 12,
-                      ),
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: const Center(
-                          child: Icon(
-                            Icons.send,
-                            color: Colors.black,
-                            size: 35,
-                          ),
-                        ),
-                      )
-                    ],
+      body: Column(
+        children: [
+          // Display chat messages using StreamBuilder
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: messages,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                // Build the list of chat messages
+                final messagesList = snapshot.data!.docs;
+                List<Widget> messageWidgets = [];
+                for (var message in messagesList) {
+                  // Customize the message display as needed
+                  String messageText = message['text'];
+                  String senderUid = message['sender'];
+
+                  // For example, display messages in a ListTile
+                  messageWidgets.add(ListTile(
+                    title: Text(messageText),
+                    subtitle: Text('Sender: $senderUid'),
+                  ));
+                }
+
+                return ListView(
+                  children: messageWidgets,
+                );
+              },
+            ),
+          ),
+          // Input field for sending messages
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: messageController,
+                    decoration: InputDecoration(
+                      hintText: 'Type your message...',
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 2), // Adjust the height as needed
-            ],
+                IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: sendMessage,
+                ),
+              ],
+            ),
           ),
-        ], // Display current user's name or a default value
+        ],
       ),
     );
-  }
-
-  chatMessages() {}
-  Future<Map<String, dynamic>> getUserData(
-      String currentUserUid, String friendUid) async {
-    final CurrentUserDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUserUid)
-        .get();
-    final friendDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(friendUid)
-        .get();
-
-    if (CurrentUserDoc.exists && friendDoc.exists) {
-      return {
-        'currentUserDoc': CurrentUserDoc,
-        'friendDoc': friendDoc,
-      };
-    } else {
-      return {
-        'currentUserDoc': null,
-        'friendDoc': null,
-      };
-    }
   }
 }

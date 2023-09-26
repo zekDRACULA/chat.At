@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String userName = "";
   String email = "";
-  Stream? chats;
+  Stream<List<dynamic>>? chats;
   AuthService authService = AuthService();
 
   @override
@@ -30,26 +30,34 @@ class _HomePageState extends State<HomePage> {
     gettingUserData();
   }
 
-  gettingUserData() async {
-    await HelperFunctions.getUserEmailFromSf().then((value) {
-      setState(() {
-        email = value!;
-      });
+ gettingUserData() async {
+  await HelperFunctions.getUserEmailFromSf().then((value) {
+    setState(() {
+      email = value!;
     });
-    await HelperFunctions.getUserNameFromSF().then((val) {
-      setState(() {
-        userName = val!;
-      });
+  });
+  await HelperFunctions.getUserNameFromSF().then((val) {
+    setState(() {
+      userName = val!;
     });
-    //getting the list of snapshots in chat stream
-    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getUserChats()
-        .then((snapshot) {
-      setState(() {
-        chats = snapshot;
-      });
+  });
+
+  // Getting the list of snapshots in chat stream
+  await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+      .getUserChats()
+      .then((List<dynamic> snapshot) {
+    setState(() {
+      chats = snapshot; // Assign the List directly
     });
-  }
+  });
+
+  await DatabaseService().getChats().then((snapshot) {
+    setState(() {
+      chats = snapshot;
+    });
+  });
+}
+
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -329,27 +337,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  chatList() {
-    return StreamBuilder(
-        stream: chats,
-        builder: (context, AsyncSnapshot snapshot) {
-          //make some checks
-          if (snapshot.hasData) {
-            if (snapshot.data['chats'] != null) {
-              if (snapshot.data['chats'].length != 0) {
-                return const Text("Hello");
-              } else {
-                return noChatWidget();
-              }
-            } else {
-              return noChatWidget();
-            }
+  Widget chatList() {
+    return StreamBuilder<List<dynamic>>(
+      stream: chats,
+      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+        // Make some checks
+        if (snapshot.hasData) {
+          List<dynamic> chatsData = snapshot.data!;
+          if (chatsData.isNotEmpty) {
+            return const Text("Hello");
           } else {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.black),
-            );
+            return noChatWidget();
           }
-        });
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.black),
+          );
+        } else {
+          // Handle error or other cases here
+          return Container(); // Return an empty container for now
+        }
+      },
+    );
   }
 
   noChatWidget() {
