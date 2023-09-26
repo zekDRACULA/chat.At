@@ -47,13 +47,8 @@ class _HomePageState extends State<HomePage> {
         .getUserChats()
         .then((snapshot) {
       setState(() {
-        chats != snapshot; // Assign the List directly
-      });
-    });
-
-    await DatabaseService().getChats().then((snapshot) {
-      setState(() {
-        chats != snapshot;
+        chats = Stream<List<dynamic>>.fromIterable(
+            [snapshot]); // Convert List to Stream
       });
     });
   }
@@ -345,7 +340,7 @@ class _HomePageState extends State<HomePage> {
           List<dynamic>? chatData = snapshot.data;
 
           if (chatData != null) {
-            if (chatData.length != 0) {
+            if (chatData.isNotEmpty) {
               return const Text("Hello");
             } else {
               return noChatWidget();
