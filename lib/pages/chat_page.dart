@@ -37,7 +37,8 @@ class _ChatPageState extends State<ChatPage> {
   void sendMessage() {
     String messageText = messageController.text.trim();
     if (messageText.isNotEmpty) {
-      DatabaseService().sendMessage(widget.chatId!, widget.currentUserUid!, messageText);
+      DatabaseService()
+          .sendMessage(widget.chatId!, widget.currentUserUid!, messageText);
       messageController.clear();
     }
   }
@@ -90,8 +91,8 @@ class _ChatPageState extends State<ChatPage> {
                 Expanded(
                   child: TextFormField(
                     controller: messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Type your message...',
+                    decoration: const InputDecoration(
+                      hintText: 'Message',
                     ),
                   ),
                 ),
