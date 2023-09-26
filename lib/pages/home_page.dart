@@ -30,34 +30,33 @@ class _HomePageState extends State<HomePage> {
     gettingUserData();
   }
 
- gettingUserData() async {
-  await HelperFunctions.getUserEmailFromSf().then((value) {
-    setState(() {
-      email = value!;
+  gettingUserData() async {
+    await HelperFunctions.getUserEmailFromSf().then((value) {
+      setState(() {
+        email = value!;
+      });
     });
-  });
-  await HelperFunctions.getUserNameFromSF().then((val) {
-    setState(() {
-      userName = val!;
+    await HelperFunctions.getUserNameFromSF().then((val) {
+      setState(() {
+        userName = val!;
+      });
     });
-  });
 
-  // Getting the list of snapshots in chat stream
-  await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-      .getUserChats()
-      .then((List<dynamic> snapshot) {
-    setState(() {
-      chats = snapshot; // Assign the List directly
+    // Getting the list of snapshots in chat stream
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getUserChats()
+        .then((List<dynamic> snapshot) {
+      setState(() {
+        chats = snapshot as Stream<List>?; // Assign the List directly
+      });
     });
-  });
 
-  await DatabaseService().getChats().then((snapshot) {
-    setState(() {
-      chats = snapshot;
+    await DatabaseService().getChats().then((snapshot) {
+      setState(() {
+        chats = snapshot;
+      });
     });
-  });
-}
-
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -337,25 +336,27 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget chatList() {
+  chatList() {
     return StreamBuilder<List<dynamic>>(
       stream: chats,
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         // Make some checks
         if (snapshot.hasData) {
-          List<dynamic> chatsData = snapshot.data!;
-          if (chatsData.isNotEmpty) {
-            return const Text("Hello");
+          List<dynamic>? chatData = snapshot.data;
+
+          if (chatData != null) {
+            if (chatData.length != 0) {
+              return const Text("Hello");
+            } else {
+              return noChatWidget();
+            }
           } else {
             return noChatWidget();
           }
-        } else if (snapshot.connectionState == ConnectionState.waiting) {
+        } else {
           return const Center(
             child: CircularProgressIndicator(color: Colors.black),
           );
-        } else {
-          // Handle error or other cases here
-          return Container(); // Return an empty container for now
         }
       },
     );
