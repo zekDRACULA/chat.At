@@ -30,17 +30,12 @@ class _ChatPageState extends State<ChatPage> {
 
   // Load chat messages for the given chat ID
   void loadChatMessages() {
-    messages = DatabaseService().getChatMessages(widget.chatId!);
+    
   }
 
   // Send a message to the chat
   void sendMessage() {
-    String messageText = messageController.text.trim();
-    if (messageText.isNotEmpty) {
-      DatabaseService()
-          .sendMessage(widget.chatId!, widget.currentUserUid!, messageText);
-      messageController.clear();
-    }
+   
   }
 
   @override
